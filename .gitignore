@@ -1,3 +1,8 @@
+#LocalData
+data/*.csv
+data/*.zip
+.venvWizeLine
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
