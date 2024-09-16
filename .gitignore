@@ -1,3 +1,6 @@
+#keys
+data/conf/*.*
+
 #LocalData
 data/*.csv
 data/*.zip
