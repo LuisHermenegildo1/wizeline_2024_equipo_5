@@ -31,7 +31,6 @@ class DataIngestor:
         return df
 
 if __name__ == "__main__":
-    # Ejemplo de cómo usar la clase
     ingestor = DataIngestor(
         kaggle_source='vijayuv/onlineretail',
         raw_folder='data/raw_data',
