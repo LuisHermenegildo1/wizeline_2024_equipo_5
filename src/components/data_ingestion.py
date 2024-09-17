@@ -1,46 +1,44 @@
-## Data ingestion preparation pipeline
-###  Data Engineer: Miguel Avila
-###  Reviewers: Luis Hermenegildo, Edgar Correa, Diego JE
-###  Proyecto Final del BootCamp Wizeline MLOPS2
-###  Equipo: mlops-equipo5 Segunda Edicion, 2024
-
-#from https://www.kaggle.com/discussions/general/74235
-
-###dependencies:
-#!pip install kaggle
 
 import subprocess
+from pathlib import Path
+import pandas as pd
 
-#define config variables
-#src_folder = 'data/src_online_retail'
-#src_name = 'data/online_retail_raw.csv'
-#stg_folder = 'data/stg_online_retail'
-#stg_name = 'data/online_retail_stg.csv'
-#stg_rejected_name = 'data/online_retail_stg_rejected.csv'
-#prod_folder = 'data/prod_online_retail'
-#model_train_data = 'data/online_retail_train.csv'
-#model_train_pct = 0.6
-#model_validation_data = 'data/online_retail_validation.csv'
-#model_validation_pct = 0.2
-#model_test_data = 'data/online_retail_test.csv'
-#model_test_pct = 0.2
-#date_format = '%m/%d/%Y %H:%M'
+class DataIngestor:
+    def __init__(self, kaggle_source, raw_folder, stg_folder, csv_file):
+        self.kaggle_source = kaggle_source
+        self.raw_folder = Path(raw_folder)
+        self.stg_folder = Path(stg_folder)
+        self.csv_file = self.stg_folder / csv_file
 
-l_kagge_source = 'vijayuv/onlineretail'
-l_raw_folder = 'data/raw_data'
-l_stg_folder = 'data/stagging_data'
+    def download_data(self):
+        try:
+            subprocess.run(f'kaggle datasets download -d {self.kaggle_source}  -p {self.raw_folder} --force', check=True, shell=True)
+            print(f"Dataset downloaded successfully at {self.raw_folder}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error downloading dataset: {e}")
+            return
 
-##for windows: key file should be located at c:\<user>\.kaggle
-subprocess.run(f'kaggle datasets download -d {l_kagge_source}  -p {l_raw_folder} --force')
-subprocess.run(f'powershell -command \"Expand-Archive -Force \'{l_raw_folder}/onlineretail.zip\' \'{l_stg_folder}\'\"')
+    def extract_data(self):
+        try:
+            subprocess.run(f'powershell -command \"Expand-Archive -Force \'{self.raw_folder}/onlineretail.zip\' \'{self.stg_folder}\'\"', check=True, shell=True)
+            print(f"Data extracted to {self.stg_folder}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error extracting dataset: {e}")
 
-#! mkdir ~/.kaggle
-#! cp data/conf/kaggle.json ~/.kaggle/
-#! chmod 600 ~/.kaggle/kaggle.json
-#! kaggle datasets list
-#kaggle datasets download -d vijayuv/onlineretail
-#! mkdir {src_folder}
-#! mkdir {stg_folder}
-#! mkdir {prod_folder}
-#! unzip onlineretail.zip -d {src_folder}/
-#! mv {src_folder}/OnlineRetail.csv {src_folder}/{src_name}
+    def load_data(self):
+        # Cargar los datos desde el archivo CSV después de extraerlos
+        df = pd.read_csv(self.csv_file, encoding='ISO-8859-1')
+        return df
+
+if __name__ == "__main__":
+    # Ejemplo de cómo usar la clase
+    ingestor = DataIngestor(
+        kaggle_source='vijayuv/onlineretail',
+        raw_folder='data/raw_data',
+        stg_folder='data/stagging_data',
+        csv_file='Online Retail.csv'
+    )
+    ingestor.download_data()
+    ingestor.extract_data()
+    df = ingestor.load_data()
+    print(df.head())
