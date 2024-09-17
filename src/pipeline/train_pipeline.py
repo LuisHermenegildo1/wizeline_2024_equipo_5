@@ -40,11 +40,11 @@ def run_training_pipeline():
     # Entrenamiento usando GridSearchCV
     best_models, model_scores = trainer.grid_search(X_transformed, y)
 
-    # Aquí podrías realizar un entrenamiento con RandomizedSearch si quieres comparar
+    # Aquí podríamos realizar un entrenamiento con RandomizedSearch si quieres comparar
     # best_models_random, model_scores_random = trainer.random_search(X_transformed, y)
 
     # 4. Guardar los modelos entrenados y otros artefactos necesarios
-    # Nota: Aquí puedes guardar solo el mejor modelo o múltiples modelos si es necesario
+    # Nota: Aquí podríamos guardar solo el mejor modelo o múltiples modelos si es necesario
     for model_name, model in best_models.items():
         print(f"Saving {model_name}...")
         trainer.save_model(model, transformer.preprocessor, y)
